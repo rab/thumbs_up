@@ -49,13 +49,15 @@ module ThumbsUp #:nodoc:
         voted_which_way?(voteable, :down)
       end
 
-      def voted_on?(voteable)
-        0 < Vote.where(
-              :voter_id => self.id,
-              :voter_type => self.class.base_class.name,
-              :voteable_id => voteable.id,
-              :voteable_type => voteable.class.base_class.name
-            ).count
+      def voted_on?(voteable, recently=nil)
+        query = Vote.where(
+                           :voter_id => self.id,
+                           :voter_type => self.class.base_class.name,
+                           :voteable_id => voteable.id,
+                           :voteable_type => voteable.class.base_class.name
+                           )
+        query = query.recent(recently) if recently
+        0 < query.count
       end
 
       def vote_for(voteable)
